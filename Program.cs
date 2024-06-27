@@ -1,46 +1,53 @@
-﻿using Tareas;
-Random random=new Random();
-string descripcionBuscada;
-int cantidad=random.Next(1,10);
-Console.WriteLine($"Se generaran {cantidad} Tareas pendientes");
-List<Tarea> tareasPendientes=Tarea.GenerarTareasAleatorias(cantidad);
-List<Tarea> tareasRealizadas=[];
-Console.WriteLine("|| TAREAS PENDIENTES ||");
-foreach(var tarea in tareasPendientes){
-    Console.WriteLine($"ID: {tarea.Id}\nDESCRIPCION: {tarea.Descripcion}\nDURACION: {tarea.Duracion}\n");
-}
-while(true){
-    Console.WriteLine("Escriba la descripcion de la tarea que quiere encontrar (escriba 0 si quiere terminar)");
-    descripcionBuscada=Console.ReadLine();
-    if(descripcionBuscada=='0'.ToString()){
-        break;
-    }
-    Tarea tarea=tareasPendientes.Find(t=>t.Descripcion.ToString().ToLower()==descripcionBuscada.ToLower());
-    if(tarea!=null){
-        Console.WriteLine($"|| TAREA ENCONTRADA ||\nID: {tarea.Id}\nDESCRIPCION: {tarea.Descripcion}\nDURACION: {tarea.Duracion}");
+using EspacioCalculadora;
+Console.WriteLine("||PROBANDO CALCULADORA||");
+Calculadora miCalculadora=new Calculadora();
+int seguir=1;
+int operacion;
+double numero;
+while(seguir==1){
+    Console.WriteLine("ELIJA UNA OPERACION QUE QUIERA REALIZAR\n1:SUMAR\n2:RESTAR\n3:MULTIPLICAR\n4:DIVIDIR\n5:LIMPIAR");
+    do{
+        operacion=int.Parse(Console.ReadLine());
+        if(operacion<1 || operacion>5){
+            Console.WriteLine("OPERACION INCORRECTA, SELECCIONE UN NUMERO DEL 1 AL 5");
+        }
+    }while(operacion<1 || operacion>5);
+    if(operacion!=5){
+        Console.WriteLine("ELIJA UN NUMERO PARA OPERAR");
+        do{
+            numero=double.Parse(Console.ReadLine());
+            if(operacion==4 && numero==0){
+                Console.WriteLine("NO SE PUEDE REALIZAR UNA DIVISION CUYO DIVIDENDO SEA 0, CAMBIE EL NUMERO");
+            }
+        }while(operacion==4 && numero==0);
+        switch(operacion){
+            case 1:
+                miCalculadora.Sumar(numero);
+            break;
+            case 2:
+                miCalculadora.Restar(numero);
+            break;
+            case 3:
+                miCalculadora.Multiplicar(numero);
+            break;
+            case 4:
+                miCalculadora.Dividir(numero);
+            break;
+        }
+        Console.WriteLine($"Resultado:{miCalculadora.resultado}");
     }else{
-        Console.WriteLine("Tarea no encontrada");
+        miCalculadora.Limpiar();
+        Console.WriteLine($"DATO LIMPIADO. DATO={miCalculadora.resultado}");
     }
-}
-while(true){
-    Console.WriteLine("Escriba la id de la tarea que quiere mover como realizada (escriba 0 si quiere terminar)");
-    if(int.TryParse(Console.ReadLine(), out int id) && id==0){
-        break;
+    Console.WriteLine("¿DESEA SEGUIR OPERANDO?\n1:SI\n2:NO");
+    do{
+        seguir=int.Parse(Console.ReadLine());
+        if(seguir<1 || seguir>2){
+            Console.WriteLine("OPCION INCORRECTA, SELECCIONE 1 O 2");
+        }
+    }while(seguir<1 || seguir>2);
+    Console.WriteLine("|| HISTORIAL DE OPERACIONES ||");
+    foreach(var op in miCalculadora.Historial){
+        Console.WriteLine($"Resultado anterior: {op.ResultadoAnterior}, Nuevo valor: {op.NuevoValor}, Operacion: {op.TipoDeOperacion}, Resultado: {op.Resultado}");
     }
-    Tarea tarea=tareasPendientes.Find(t=>t.Id==id);
-    if(tarea!=null){
-        tareasPendientes.Remove(tarea);
-        tareasRealizadas.Add(tarea);
-        Console.WriteLine($"Tarea {id} marcada como realizada");
-    }else{
-        Console.WriteLine("Tarea no encontrada");
-    }
-}
-Console.WriteLine("|| TAREAS PENDIENTES ||");
-foreach(var tarea in tareasPendientes){
-    Console.WriteLine($"ID: {tarea.Id}\nDESCRIPCION: {tarea.Descripcion}\nDURACION: {tarea.Duracion}\n");
-}
-Console.WriteLine("|| TAREAS REALIZADAS ||");
-foreach(var tarea in tareasRealizadas){
-    Console.WriteLine($"ID: {tarea.Id}\nDESCRIPCION: {tarea.Descripcion}\nDURACION: {tarea.Duracion}\n");
 }
